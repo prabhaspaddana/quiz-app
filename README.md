@@ -133,12 +133,14 @@ The application is deployed using the following services:
 ## Testing Credentials
 
 ### Admin Account
-- Username: admin
-- Password: Admin@123
+- Username: addedadmin
+- Email   : addedadmin@gmail.com
+- Password: Password@123
 
 ### User Account
-- Username: user
-- Password: User@123
+- Username: addeduser
+- Email   : addeduser@gmail.com
+- Password: Password@123
 
 ## Repository Access
 The private repository has been shared with:
