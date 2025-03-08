@@ -4,7 +4,8 @@ import { motion } from 'framer-motion';
 import { TrophyIcon, ArrowLeftIcon } from '@heroicons/react/24/outline';
 import axios from 'axios';
 
-axios.defaults.baseURL = 'https://quiz-app-y3h8.onrender.com/api';
+const API_URL = 'https://quiz-app-y3h8.onrender.com/api';
+axios.defaults.baseURL = API_URL;
 
 const QuizAttempt = () => {
   const location = useLocation();

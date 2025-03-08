@@ -3,7 +3,8 @@ import axios from 'axios';
 import { motion } from 'framer-motion';
 import { TrophyIcon } from '@heroicons/react/24/outline';
 
-axios.defaults.baseURL = 'https://quiz-app-y3h8.onrender.com/api';
+const API_URL = 'https://quiz-app-y3h8.onrender.com/api';
+axios.defaults.baseURL = API_URL;
 
 function Leaderboard() {
   const [scores, setScores] = useState([]);
@@ -17,7 +18,7 @@ function Leaderboard() {
   const fetchLeaderboard = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('/api/admin/scores', {
+      const response = await axios.get('/admin/scores', {
         headers: { Authorization: `Bearer ${token}` }
       });
       

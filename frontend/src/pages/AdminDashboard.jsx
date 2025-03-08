@@ -3,8 +3,9 @@ import axios from 'axios';
 import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import { PlusIcon, TrashIcon, UserGroupIcon, DocumentTextIcon, ChartBarIcon } from '@heroicons/react/24/outline';
-axios.defaults.baseURL = 'https://quiz-app-y3h8.onrender.com/api';
 
+const API_URL = 'https://quiz-app-y3h8.onrender.com/api';
+axios.defaults.baseURL = API_URL;
 
 function AdminDashboard() {
   const [users, setUsers] = useState([]);
@@ -49,9 +50,9 @@ function AdminDashboard() {
         headers: { Authorization: `Bearer ${token}` }
       };
       const [usersRes, quizzesRes, scoresRes] = await Promise.all([
-        axios.get('/api/admin/users', config),
-        axios.get('/api/quiz', config),
-        axios.get('/api/admin/scores', config)
+        axios.get('/admin/users', config),
+        axios.get('/quiz', config),
+        axios.get('/admin/scores', config)
       ]);
       setUsers(usersRes.data);
       setQuizzes(quizzesRes.data);

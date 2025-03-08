@@ -4,7 +4,8 @@ import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
 
-axios.defaults.baseURL = 'https://quiz-app-y3h8.onrender.com/api';
+const API_URL = 'https://quiz-app-y3h8.onrender.com/api';
+axios.defaults.baseURL = API_URL;
 
 function Quiz() {
   const { id } = useParams();
@@ -22,10 +23,8 @@ function Quiz() {
     const fetchQuiz = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get(`/api/quiz/${id}`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
+        const response = await axios.get(`/quiz/${id}`, {
+          headers: { Authorization: `Bearer ${token}` }
         });
         if (response.data && response.data.questions) {
           setQuiz(response.data);
@@ -75,7 +74,7 @@ function Quiz() {
   const handleQuizSubmit = async (finalAnswers) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.post(`/api/quiz/${id}/submit`, 
+      const response = await axios.post(`/quiz/${id}/submit`, 
         { answers: finalAnswers },
         { headers: { Authorization: `Bearer ${token}` } }
       );

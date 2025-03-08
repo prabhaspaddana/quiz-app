@@ -4,7 +4,8 @@ import axios from 'axios';
 import { motion } from 'framer-motion';
 import { AcademicCapIcon, ClockIcon } from '@heroicons/react/24/outline';
 
-axios.defaults.baseURL = 'https://quiz-app-y3h8.onrender.com/api';
+const API_URL = 'https://quiz-app-y3h8.onrender.com/api';
+axios.defaults.baseURL = API_URL;
 
 function QuizList() {
   const [quizzes, setQuizzes] = useState([]);
@@ -18,7 +19,7 @@ function QuizList() {
   const fetchQuizzes = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('/api/quiz', {
+      const response = await axios.get('/quiz', {
         headers: { Authorization: `Bearer ${token}` }
       });
       setQuizzes(response.data);
