@@ -32,6 +32,26 @@ mongoose.connect(process.env.MONGODB_URI, {
 .then(() => console.log('MongoDB Connected'))
 .catch((err) => console.log('MongoDB Connection Error:', err));
 
+// Root route
+app.get('/', (req, res) => {
+  res.json({
+    name: 'Quiz App API',
+    version: '1.0.0',
+    status: 'active',
+    documentation: {
+      description: 'A full-featured quiz application API',
+      endpoints: {
+        auth: '/api/auth/*',
+        quiz: '/api/quiz/*',
+        admin: '/api/admin/*',
+        leaderboard: '/api/leaderboard/*'
+      },
+      frontend: 'https://quiz-app-sand-alpha.vercel.app',
+      repository: 'https://github.com/prabhaspaddana/quiz-app'
+    }
+  });
+});
+
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/quiz', quizRoutes);
