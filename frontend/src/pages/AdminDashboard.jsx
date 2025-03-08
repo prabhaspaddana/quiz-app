@@ -4,9 +4,6 @@ import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import { PlusIcon, TrashIcon, UserGroupIcon, DocumentTextIcon, ChartBarIcon } from '@heroicons/react/24/outline';
 
-const API_URL = 'https://quiz-app-y3h8.onrender.com/api';
-axios.defaults.baseURL = API_URL;
-
 function AdminDashboard() {
   const [users, setUsers] = useState([]);
   const [quizzes, setQuizzes] = useState([]);
@@ -45,15 +42,12 @@ function AdminDashboard() {
 
   const fetchData = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const config = {
-        headers: { Authorization: `Bearer ${token}` }
-      };
       const [usersRes, quizzesRes, scoresRes] = await Promise.all([
-        axios.get('/admin/users', config),
-        axios.get('/quiz', config),
-        axios.get('/admin/scores', config)
+        axios.get('/api/admin/users'),
+        axios.get('/api/quiz'),
+        axios.get('/api/admin/scores')
       ]);
+
       setUsers(usersRes.data);
       setQuizzes(quizzesRes.data);
       setScores(scoresRes.data);
@@ -182,57 +176,31 @@ function AdminDashboard() {
   };
 
   const handleEditQuiz = async (quiz) => {
-    try {
-      // Fetch complete quiz data including questions
-      const response = await axios.get(`/api/quiz/${quiz._id}`);
-      setSelectedQuiz(response.data);
-      setIsEditingQuiz(true);
-      setSelectedTab('quizzes');
-    } catch (error) {
-      setError('Failed to fetch quiz details');
-    }
+    setSelectedQuiz(quiz);
+    setIsEditingQuiz(true);
+    setSelectedTab('quizzes');
   };
 
   const handleUpdateQuiz = async () => {
     try {
-      const validQuestions = selectedQuiz.questions.filter(q => 
-        q.question.trim() !== '' && 
-        q.options.some(opt => opt.trim() !== '') &&
-        q.correctAnswers.length > 0
-      );
-
-      if (validQuestions.length === 0) {
-        setError('Please add at least one valid question with options and correct answers');
-        return;
-      }
-
-      const quizData = {
-        ...selectedQuiz,
-        questions: validQuestions
-      };
-
-      await axios.put(`/api/admin/quiz/${selectedQuiz._id}`, quizData);
+      await axios.put(`/api/admin/quiz/${selectedQuiz._id}`, selectedQuiz);
       setIsEditingQuiz(false);
       setSelectedQuiz(null);
       fetchData();
-      setError('');
     } catch (error) {
       setError('Failed to update quiz');
     }
   };
 
   const handleQuestionDelete = (index) => {
-    if (!selectedQuiz) return;
-    const updatedQuestions = [...selectedQuiz.questions];
-    updatedQuestions.splice(index, 1);
-    setSelectedQuiz({
+    const updatedQuiz = {
       ...selectedQuiz,
-      questions: updatedQuestions
-    });
+      questions: selectedQuiz.questions.filter((_, i) => i !== index)
+    };
+    setSelectedQuiz(updatedQuiz);
   };
 
   const handleQuestionEdit = (index, field, value) => {
-    if (!selectedQuiz) return;
     const updatedQuestions = [...selectedQuiz.questions];
     if (field === 'options') {
       updatedQuestions[index].options = value;
@@ -528,7 +496,6 @@ function AdminDashboard() {
                       <div className="flex justify-between items-center">
                         <h4 className="text-lg font-medium text-gray-900 dark:text-white">Question {qIndex + 1}</h4>
                         <button
-                          type="button"
                           onClick={() => {
                             if (selectedQuiz) {
                               handleQuestionDelete(qIndex);
@@ -544,7 +511,7 @@ function AdminDashboard() {
 
                       <input
                         type="text"
-                        value={question.question || ''}
+                        value={question.question}
                         onChange={(e) => {
                           if (selectedQuiz) {
                             handleQuestionEdit(qIndex, 'question', e.target.value);
@@ -558,7 +525,7 @@ function AdminDashboard() {
                       />
 
                       <select
-                        value={question.type || 'single'}
+                        value={question.type}
                         onChange={(e) => {
                           if (selectedQuiz) {
                             handleQuestionEdit(qIndex, 'type', e.target.value);
@@ -574,11 +541,11 @@ function AdminDashboard() {
                       </select>
 
                       <div className="space-y-2">
-                        {(question.options || []).map((option, oIndex) => (
+                        {question.options.map((option, oIndex) => (
                           <input
                             key={oIndex}
                             type="text"
-                            value={option || ''}
+                            value={option}
                             onChange={(e) => {
                               const newOptions = [...question.options];
                               newOptions[oIndex] = e.target.value;
@@ -597,7 +564,7 @@ function AdminDashboard() {
                           <button
                             type="button"
                             onClick={() => {
-                              const newOptions = [...(question.options || []), ''];
+                              const newOptions = [...question.options, ''];
                               if (selectedQuiz) {
                                 handleQuestionEdit(qIndex, 'options', newOptions);
                               } else {
@@ -613,7 +580,7 @@ function AdminDashboard() {
 
                       <input
                         type="text"
-                        value={(question.correctAnswers || []).join(',')}
+                        value={question.correctAnswers.join(',')}
                         onChange={(e) => {
                           if (selectedQuiz) {
                             handleQuestionEdit(qIndex, 'correctAnswers', e.target.value);
