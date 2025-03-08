@@ -4,6 +4,9 @@ import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import { PlusIcon, TrashIcon, UserGroupIcon, DocumentTextIcon, ChartBarIcon } from '@heroicons/react/24/outline';
 
+const API_URL = 'https://quiz-app-y3h8.onrender.com/api';
+axios.defaults.baseURL = API_URL;
+
 function AdminDashboard() {
   const [users, setUsers] = useState([]);
   const [quizzes, setQuizzes] = useState([]);
@@ -42,10 +45,14 @@ function AdminDashboard() {
 
   const fetchData = async () => {
     try {
+      const config = {
+        headers: { Authorization: `Bearer ${token}` }
+      };
+      
       const [usersRes, quizzesRes, scoresRes] = await Promise.all([
-        axios.get('/api/admin/users'),
-        axios.get('/api/quiz'),
-        axios.get('/api/admin/scores')
+        axios.get('/admin/users', config),
+        axios.get('/quiz', config),
+        axios.get('/admin/scores', config)
       ]);
 
       setUsers(usersRes.data);
@@ -53,6 +60,7 @@ function AdminDashboard() {
       setScores(scoresRes.data);
       setLoading(false);
     } catch (error) {
+      console.error('Fetch error:', error);
       setError('Failed to fetch data');
       setLoading(false);
     }
@@ -61,8 +69,8 @@ function AdminDashboard() {
   const handleUserDelete = async (userId) => {
     if (!window.confirm('Are you sure you want to delete this user?')) return;
     try {
-      await axios.delete(`/api/admin/users/${userId}`);
-      setUsers(users.filter(user => user.id !== userId));
+      await axios.delete(`/admin/users/${userId}`);
+      setUsers(users.filter(user => user._id !== userId));
     } catch (error) {
       setError('Failed to delete user');
     }
@@ -71,7 +79,7 @@ function AdminDashboard() {
   const handleUserRoleToggle = async (userId, currentRole) => {
     try {
       const newRole = currentRole === 'user' ? 'admin' : 'user';
-      await axios.put(`/api/admin/users/${userId}`, {
+      await axios.put(`/admin/users/${userId}`, {
         role: newRole
       });
       setUsers(users.map(user => 
@@ -85,7 +93,7 @@ function AdminDashboard() {
   const handleQuizDelete = async (quizId) => {
     if (!window.confirm('Are you sure you want to delete this quiz?')) return;
     try {
-      await axios.delete(`/api/admin/quiz/${quizId}`);
+      await axios.delete(`/admin/quiz/${quizId}`);
       setQuizzes(quizzes.filter(quiz => quiz._id !== quizId));
     } catch (error) {
       setError('Failed to delete quiz');
@@ -149,8 +157,7 @@ function AdminDashboard() {
         questions: validQuestions
       };
 
-      await axios.post('/api/admin/quiz', quizData);
-
+      await axios.post('/admin/quiz', quizData);
       setNewQuiz({
         title: '',
         description: '',
@@ -166,7 +173,7 @@ function AdminDashboard() {
   const handleAddUser = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('/api/auth/register', newUser);
+      await axios.post('/auth/register', newUser);
       fetchData();
       setShowAddUser(false);
       setNewUser({ username: '', email: '', password: '', role: 'user' });
@@ -176,14 +183,19 @@ function AdminDashboard() {
   };
 
   const handleEditQuiz = async (quiz) => {
-    setSelectedQuiz(quiz);
-    setIsEditingQuiz(true);
-    setSelectedTab('quizzes');
+    try {
+      const response = await axios.get(`/quiz/${quiz._id}`);
+      setSelectedQuiz(response.data);
+      setIsEditingQuiz(true);
+      setSelectedTab('quizzes');
+    } catch (error) {
+      setError('Failed to fetch quiz details');
+    }
   };
 
   const handleUpdateQuiz = async () => {
     try {
-      await axios.put(`/api/admin/quiz/${selectedQuiz._id}`, selectedQuiz);
+      await axios.put(`/admin/quiz/${selectedQuiz._id}`, selectedQuiz);
       setIsEditingQuiz(false);
       setSelectedQuiz(null);
       fetchData();
