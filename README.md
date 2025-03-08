@@ -1,43 +1,58 @@
 # Quiz Application
 
-A full-stack quiz application built with React.js, Node.js, Express, and MongoDB.
+A full-stack quiz application built with React.js, Node.js, Express, and MongoDB. This application allows users to take quizzes, track their progress, and includes an admin dashboard for quiz management.
+
+## Live Demo
+- Frontend (Vercel): https://quiz-app-sand-alpha.vercel.app
+- Backend (Render): https://quiz-app-y3h8.onrender.com/api
 
 ## Features
 
-- User authentication (JWT)
-- Multiple quiz types (single choice, multiple choice, true/false)
-- Admin dashboard for quiz management
-- Leaderboard system displaying user statistics
-- Dark/Light mode support
-- Responsive design for various devices
-- Password strength indicator during registration
-- Role-based access control for admin functionalities
-- Error handling with clear messages for user actions
-- Real-time score updates and feedback during quizzes
-- Ability to add, edit, and delete quizzes and questions by admins
+- User Authentication
+  - JWT-based authentication
+  - Role-based access control (User/Admin)
+  - Secure password storage with bcrypt
+  - Password strength validation
+
+- Quiz Management
+  - Multiple quiz types (single choice, multiple choice, true/false)
+  - Real-time score calculation
+  - Progress tracking
+  - Immediate feedback on answers
+
+- Admin Dashboard
+  - Comprehensive quiz management (CRUD operations)
+  - User management
+  - Score tracking
+  - Performance analytics
+
+- User Interface
+  - Responsive design for all devices
+  - Dark/Light mode support
+  - Modern UI with Tailwind CSS
+  - Smooth animations with Framer Motion
+  - Intuitive navigation
 
 ## Tech Stack
 
 ### Frontend
-- React.js (Vite)
-- Tailwind CSS
-- React Router
-- Axios
-- Context API
+- React.js 18 (Vite)
+- Tailwind CSS for styling
+- React Router v6 for navigation
+- Axios for API requests
+- Context API for state management
+- Framer Motion for animations
+- Heroicons for icons
 
 ### Backend
 - Node.js
 - Express.js
-- MongoDB (Mongoose)
-- JWT Authentication
+- MongoDB with Mongoose
+- JWT for authentication
+- Bcrypt for password hashing
+- CORS for cross-origin requests
 
-## Prerequisites
-
-- Node.js (v14 or higher)
-- MongoDB Atlas account
-- npm or yarn
-
-## Installation
+## Local Development Setup
 
 1. Clone the repository:
 ```bash
@@ -64,65 +79,81 @@ cd ../frontend
 npm install
 ```
 
-## Running the Application
+5. Start the development servers:
 
-1. Start the backend server:
+Backend:
 ```bash
 cd backend
 npm run dev
 ```
 
-2. Start the frontend development server:
+Frontend:
 ```bash
-cd ../frontend
+cd frontend
 npm run dev
 ```
 
-The application will be available at `http://localhost:5173`
-
 ## Deployment
 
+The application is deployed using the following services:
+
 ### Frontend (Vercel)
-1. Push your code to GitHub
-2. Connect your repository to Vercel
-3. Configure build settings:
-   - Build Command: `npm run build`
-   - Output Directory: `dist`
+- Repository connected to Vercel for automatic deployments
+- Environment variables configured in Vercel dashboard
+- Build command: `npm run build`
+- Output directory: `dist`
 
 ### Backend (Render)
-1. Create a new Web Service on Render
-2. Connect your repository
-3. Configure environment variables
-4. Deploy
+- Web service configured on Render
+- Environment variables set in Render dashboard
+- Automatic deployments from main branch
+- Database hosted on MongoDB Atlas
 
-## API Endpoints
+## API Documentation
 
-### Authentication
-- **POST** `/api/auth/register` - Register a new user
-- **POST** `/api/auth/login` - Login user
+### Authentication Endpoints
+- `POST /api/auth/register` - Register new user
+- `POST /api/auth/login` - User login
+- `GET /api/auth/me` - Get current user
 
-### Quiz
-- **GET** `/api/quiz` - Get all quizzes
-- **GET** `/api/quiz/:id` - Get quiz by ID
-- **POST** `/api/quiz/:id/submit` - Submit quiz answers
+### Quiz Endpoints
+- `GET /api/quiz` - Get all quizzes
+- `GET /api/quiz/:id` - Get specific quiz
+- `POST /api/quiz/:id/submit` - Submit quiz answers
 
-### Admin
-- **POST** `/api/admin/quiz` - Create new quiz (admin only)
-- **PUT** `/api/admin/quiz/:id` - Update existing quiz (admin only)
-- **DELETE** `/api/admin/quiz/:id` - Delete quiz (admin only)
-- **GET** `/api/admin/leaderboard` - Get leaderboard (admin only)
-- **GET** `/api/admin/scores` - Get all scores (admin only)
-- **GET** `/api/admin/users` - Get all users (admin only)
-- **PUT** `/api/admin/users/:id` - Update user role (admin only)
-- **DELETE** `/api/admin/users/:id` - Delete user (admin only)
+### Admin Endpoints
+- `POST /api/admin/quiz` - Create quiz
+- `PUT /api/admin/quiz/:id` - Update quiz
+- `DELETE /api/admin/quiz/:id` - Delete quiz
+- `GET /api/admin/users` - Get all users
+- `PUT /api/admin/users/:id` - Update user
+- `DELETE /api/admin/users/:id` - Delete user
+- `GET /api/admin/scores` - Get all scores
 
-## Contributing
+## Testing Credentials
 
-1. Fork the repository
-2. Create a new branch
-3. Make your changes
-4. Submit a pull request
+### Admin Account
+- Username: admin
+- Password: Admin@123
 
-## License
+### User Account
+- Username: user
+- Password: User@123
 
-MIT 
+## Repository Access
+The private repository has been shared with:
+- abhay_gond@vecros.com
+- prime@vecros.com
+
+## Future Enhancements
+- Quiz categories and tags
+- User profile customization
+- Social sharing features
+- Advanced analytics
+- Quiz timer functionality
+- Certificate generation
+
+## Contact
+For any queries regarding the application, please contact:
+- Email: prabhaspaddana@gmail.com
+- GitHub: https://github.com/prabhaspaddana 
