@@ -11,7 +11,7 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const API_URL = 'https://quiz-app-y3h8.onrender.com/api';
+  const API_URL = 'https://quiz-app-y3h8.onrender.com/api/auth';
 
   useEffect(() => {
     checkAuth();
@@ -22,7 +22,7 @@ export function AuthProvider({ children }) {
     try {
       const token = localStorage.getItem('token');
       if (token) {
-        const response = await axios.get(`${API_URL}/auth/me`, {
+        const response = await axios.get(`${API_URL}/me`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUser({
@@ -39,7 +39,7 @@ export function AuthProvider({ children }) {
 
   const login = async (identifier, password) => {
     try {
-      const response = await axios.post(`${API_URL}/auth/login`, { identifier, password });
+      const response = await axios.post(`${API_URL}/login`, { identifier, password });
       if (response.data.success) {
         setUser({
           ...response.data.user,
@@ -59,7 +59,7 @@ export function AuthProvider({ children }) {
 
   const register = async (userData) => {
     try {
-      const response = await axios.post(`${API_URL}/auth/register`, userData);
+      const response = await axios.post(`${API_URL}/register`, userData);
       return { success: true, message: response.data.message };
     } catch (error) {
       return {
