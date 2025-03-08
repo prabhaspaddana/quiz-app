@@ -34,36 +34,28 @@ export function AuthProvider({ children }) {
     }
   };
 
+  const API_URL = 'https://quiz-app-y3h8.onrender.com/api/auth';
+
   const login = async (identifier, password) => {
     try {
-      const response = await axios.post('/api/auth/login', { identifier, password });
-      const { token, user } = response.data;
-      localStorage.setItem('token', token);
-      setUser({
-        ...user,
-        isAdmin: user.role === 'admin'
-      });
-      return { success: true };
+      const response = await axios.post(`${API_URL}/login`, { identifier, password });
+      if (response.data.success) {
+        setUser(response.data.user);
+        localStorage.setItem('token', response.data.token);
+        return { success: true };
+      }
+      return { success: false, message: response.data.message };
     } catch (error) {
-      return {
-        success: false,
-        message: error.response?.data?.message || 'Login failed'
-      };
+      return { success: false, message: error.response?.data?.message || 'Login failed' };
     }
   };
 
-  const register = async (username, email, password) => {
+  const register = async (userData) => {
     try {
-      const response = await axios.post('/api/auth/register', { username, email, password });
-      return { 
-        success: true,
-        message: response.data.message 
-      };
+      const response = await axios.post(`${API_URL}/register`, userData);
+      return response.data;
     } catch (error) {
-      return {
-        success: false,
-        message: error.response?.data?.message || 'Registration failed'
-      };
+      throw error;
     }
   };
 
