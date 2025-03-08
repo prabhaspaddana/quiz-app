@@ -5,8 +5,6 @@ import { motion } from 'framer-motion';
 import { ExclamationCircleIcon } from '@heroicons/react/24/outline';
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL || 'https://quiz-app-y3h8.onrender.com/api/auth';
-
 function Login() {
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
@@ -19,11 +17,11 @@ function Login() {
     setError('');
 
     try {
-      const result = await axios.post(`${API_URL}/login`, { identifier, password });
-      if (result.data.success) {
+      const result = await login(identifier, password);
+      if (result.success) {
         navigate('/quizzes');
       } else {
-        setError(result.data.message);
+        setError(result.message);
       }
     } catch (error) {
       setError('Login failed. Please check your credentials.');
