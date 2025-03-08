@@ -3,6 +3,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { motion } from 'framer-motion';
 import { ExclamationCircleIcon } from '@heroicons/react/24/outline';
+import axios from 'axios';
+
+const API_URL = process.env.REACT_APP_API_URL || 'https://quiz-app-y3h8.onrender.com/api/auth';
 
 function Login() {
   const [identifier, setIdentifier] = useState('');
@@ -15,11 +18,15 @@ function Login() {
     e.preventDefault();
     setError('');
 
-    const result = await login(identifier, password);
-    if (result.success) {
-      navigate('/quizzes');
-    } else {
-      setError(result.message);
+    try {
+      const result = await axios.post(`${API_URL}/login`, { identifier, password });
+      if (result.data.success) {
+        navigate('/quizzes');
+      } else {
+        setError(result.data.message);
+      }
+    } catch (error) {
+      setError('Login failed. Please check your credentials.');
     }
   };
 

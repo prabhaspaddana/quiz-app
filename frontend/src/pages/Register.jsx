@@ -3,6 +3,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { motion } from 'framer-motion';
 import PasswordStrengthIndicator from '../components/PasswordStrengthIndicator';
+import axios from 'axios';
+
+const API_URL = process.env.REACT_APP_API_URL;
 
 function Register() {
   const navigate = useNavigate();
@@ -62,6 +65,15 @@ function Register() {
       ...prev,
       [name]: value
     }));
+  };
+
+  const registerUser = async (userData) => {
+    try {
+      const response = await axios.post(`${API_URL}/register`, userData);
+      console.log('User registered successfully:', response.data);
+    } catch (error) {
+      console.error('Error registering user:', error);
+    }
   };
 
   return (
