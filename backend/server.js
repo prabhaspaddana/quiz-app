@@ -13,10 +13,22 @@ const app = express();
 
 // Security Headers
 app.use((req, res, next) => {
-  res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+  // Allow HTTPS
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  
+  // Security headers
+  res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
   res.setHeader('X-Content-Type-Options', 'nosniff');
-  res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+  res.setHeader('X-Frame-Options', 'DENY');
   res.setHeader('X-XSS-Protection', '1; mode=block');
+  res.setHeader('Content-Security-Policy', "default-src 'self'");
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
   next();
 });
 
@@ -41,70 +53,78 @@ mongoose.connect(process.env.MONGODB_URI, {
 .then(() => console.log('MongoDB Connected'))
 .catch((err) => console.log('MongoDB Connection Error:', err));
 
-// API Documentation route
-app.get('/api', (req, res) => {
-  res.json({
-    name: 'Quiz App API',
-    version: '1.0.0',
-    status: 'active',
-    documentation: {
-      description: 'A full-featured quiz application API',
-      endpoints: {
-        auth: {
-          register: 'POST /api/auth/register',
-          login: 'POST /api/auth/login',
-          me: 'GET /api/auth/me'
-        },
-        quiz: {
-          list: 'GET /api/quiz',
-          single: 'GET /api/quiz/:id',
-          submit: 'POST /api/quiz/:id/submit'
-        },
-        admin: {
-          users: 'GET /api/admin/users',
-          quizzes: 'GET /api/admin/quiz',
-          scores: 'GET /api/admin/scores'
-        },
-        leaderboard: 'GET /api/leaderboard'
+// Base route handler
+const apiDocumentation = {
+  name: 'Quiz App API',
+  version: '1.0.0',
+  status: 'active',
+  documentation: {
+    description: 'A full-featured quiz application API',
+    endpoints: {
+      auth: {
+        register: 'POST /auth/register',
+        login: 'POST /auth/login',
+        me: 'GET /auth/me'
       },
-      frontend: 'https://quiz-app-sand-alpha.vercel.app',
-      repository: 'https://github.com/prabhaspaddana/quiz-app'
-    },
-    testCredentials: {
+      quiz: {
+        list: 'GET /quiz',
+        single: 'GET /quiz/:id',
+        submit: 'POST /quiz/:id/submit'
+      },
       admin: {
-        username: 'admin',
-        password: 'Admin@123'
+        users: 'GET /admin/users',
+        quizzes: 'GET /admin/quiz',
+        scores: 'GET /admin/scores'
       },
-      user: {
-        username: 'user',
-        password: 'User@123'
-      }
+      leaderboard: 'GET /leaderboard'
+    },
+    frontend: 'https://quiz-app-sand-alpha.vercel.app',
+    repository: 'https://github.com/prabhaspaddana/quiz-app'
+  },
+  testCredentials: {
+    admin: {
+      username: 'admin',
+      password: 'Admin@123'
+    },
+    user: {
+      username: 'user',
+      password: 'User@123'
     }
-  });
-});
+  }
+};
 
-// Redirect root to API documentation
+// Root routes
 app.get('/', (req, res) => {
-  res.redirect('/api');
+  res.json(apiDocumentation);
 });
 
-// Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/quiz', quizRoutes);
-app.use('/api/admin', adminRoutes);
-app.use('/api/leaderboard', leaderboardRoutes);
+app.get('/api', (req, res) => {
+  res.json(apiDocumentation);
+});
+
+// API Routes
+app.use('/auth', authRoutes);
+app.use('/quiz', quizRoutes);
+app.use('/admin', adminRoutes);
+app.use('/leaderboard', leaderboardRoutes);
 
 // Error Handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ message: 'Something went wrong!' });
+  res.status(500).json({ 
+    status: 'error',
+    message: 'Something went wrong!',
+    documentation: '/'
+  });
 });
 
 // 404 Handler
 app.use((req, res) => {
   res.status(404).json({ 
+    status: 'error',
     message: 'Route not found',
-    documentation: '/api'
+    documentation: '/',
+    availableEndpoints: apiDocumentation.documentation.endpoints
   });
 });
 
