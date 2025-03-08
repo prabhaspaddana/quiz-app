@@ -11,6 +11,15 @@ dotenv.config();
 
 const app = express();
 
+// Security Headers
+app.use((req, res, next) => {
+  res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  next();
+});
+
 // Middleware
 app.use(cors({
   origin: [
@@ -32,8 +41,8 @@ mongoose.connect(process.env.MONGODB_URI, {
 .then(() => console.log('MongoDB Connected'))
 .catch((err) => console.log('MongoDB Connection Error:', err));
 
-// Root route
-app.get('/', (req, res) => {
+// API Documentation route
+app.get('/api', (req, res) => {
   res.json({
     name: 'Quiz App API',
     version: '1.0.0',
@@ -41,15 +50,42 @@ app.get('/', (req, res) => {
     documentation: {
       description: 'A full-featured quiz application API',
       endpoints: {
-        auth: '/api/auth/*',
-        quiz: '/api/quiz/*',
-        admin: '/api/admin/*',
-        leaderboard: '/api/leaderboard/*'
+        auth: {
+          register: 'POST /api/auth/register',
+          login: 'POST /api/auth/login',
+          me: 'GET /api/auth/me'
+        },
+        quiz: {
+          list: 'GET /api/quiz',
+          single: 'GET /api/quiz/:id',
+          submit: 'POST /api/quiz/:id/submit'
+        },
+        admin: {
+          users: 'GET /api/admin/users',
+          quizzes: 'GET /api/admin/quiz',
+          scores: 'GET /api/admin/scores'
+        },
+        leaderboard: 'GET /api/leaderboard'
       },
       frontend: 'https://quiz-app-sand-alpha.vercel.app',
       repository: 'https://github.com/prabhaspaddana/quiz-app'
+    },
+    testCredentials: {
+      admin: {
+        username: 'admin',
+        password: 'Admin@123'
+      },
+      user: {
+        username: 'user',
+        password: 'User@123'
+      }
     }
   });
+});
+
+// Redirect root to API documentation
+app.get('/', (req, res) => {
+  res.redirect('/api');
 });
 
 // Routes
@@ -62,6 +98,14 @@ app.use('/api/leaderboard', leaderboardRoutes);
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ message: 'Something went wrong!' });
+});
+
+// 404 Handler
+app.use((req, res) => {
+  res.status(404).json({ 
+    message: 'Route not found',
+    documentation: '/api'
+  });
 });
 
 const PORT = process.env.PORT || 5000;
