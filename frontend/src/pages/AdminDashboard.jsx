@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import { PlusIcon, TrashIcon, UserGroupIcon, DocumentTextIcon, ChartBarIcon } from '@heroicons/react/24/outline';
 
-const API_URL = 'https://quiz-app-y3h8.onrender.com/api';
+const API_URL = 'https://quiz-app-y3h8.onrender.com';
 axios.defaults.baseURL = API_URL;
 
 function AdminDashboard() {

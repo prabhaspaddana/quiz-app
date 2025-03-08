@@ -26,7 +26,7 @@ export function AuthProvider({ children }) {
     try {
       const token = localStorage.getItem('token');
       if (token) {
-        const response = await axios.get(`${API_URL}/api/auth/me`, {
+        const response = await axios.get('/auth/me', {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUser({
@@ -43,7 +43,7 @@ export function AuthProvider({ children }) {
 
   const login = async (identifier, password) => {
     try {
-      const response = await axios.post(`${API_URL}/api/auth/login`, { identifier, password });
+      const response = await axios.post('/auth/login', { identifier, password });
       if (response.data.success) {
         setUser({
           ...response.data.user,
@@ -63,7 +63,7 @@ export function AuthProvider({ children }) {
 
   const register = async (userData) => {
     try {
-      const response = await axios.post(`${API_URL}/api/auth/register`, userData);
+      const response = await axios.post('/auth/register', userData);
       return { success: true, message: response.data.message };
     } catch (error) {
       return {
