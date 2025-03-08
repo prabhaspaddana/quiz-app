@@ -12,4 +12,7 @@ export default defineConfig({
       },
     },
   },
+  define: {
+    'process.env.REACT_APP_API_URL': JSON.stringify('https://quiz-app-y3h8.onrender.com/api')
+  }
 })

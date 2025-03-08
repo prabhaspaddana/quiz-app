@@ -11,15 +11,18 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const API_URL = 'https://quiz-app-y3h8.onrender.com/api';
+
   useEffect(() => {
     checkAuth();
+    axios.defaults.baseURL = API_URL;
   }, []);
 
   const checkAuth = async () => {
     try {
       const token = localStorage.getItem('token');
       if (token) {
-        const response = await axios.get('/api/auth/me', {
+        const response = await axios.get(`${API_URL}/auth/me`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUser({
@@ -34,28 +37,35 @@ export function AuthProvider({ children }) {
     }
   };
 
-  const API_URL = 'https://quiz-app-y3h8.onrender.com/api/auth';
-
   const login = async (identifier, password) => {
     try {
-      const response = await axios.post(`${API_URL}/login`, { identifier, password });
+      const response = await axios.post(`${API_URL}/auth/login`, { identifier, password });
       if (response.data.success) {
-        setUser(response.data.user);
+        setUser({
+          ...response.data.user,
+          isAdmin: response.data.user.role === 'admin'
+        });
         localStorage.setItem('token', response.data.token);
         return { success: true };
       }
       return { success: false, message: response.data.message };
     } catch (error) {
-      return { success: false, message: error.response?.data?.message || 'Login failed' };
+      return {
+        success: false,
+        message: error.response?.data?.message || 'Login failed'
+      };
     }
   };
 
   const register = async (userData) => {
     try {
-      const response = await axios.post(`${API_URL}/register`, userData);
-      return response.data;
+      const response = await axios.post(`${API_URL}/auth/register`, userData);
+      return { success: true, message: response.data.message };
     } catch (error) {
-      throw error;
+      return {
+        success: false,
+        message: error.response?.data?.message || 'Registration failed'
+      };
     }
   };
 
@@ -73,9 +83,7 @@ export function AuthProvider({ children }) {
       }
       return config;
     },
-    (error) => {
-      return Promise.reject(error);
-    }
+    (error) => Promise.reject(error)
   );
 
   // Handle 401 responses

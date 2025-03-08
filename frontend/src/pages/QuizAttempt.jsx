@@ -2,6 +2,9 @@ import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { TrophyIcon, ArrowLeftIcon } from '@heroicons/react/24/outline';
+import axios from 'axios';
+
+axios.defaults.baseURL = 'https://quiz-app-y3h8.onrender.com/api';
 
 const QuizAttempt = () => {
   const location = useLocation();

@@ -4,6 +4,8 @@ import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
 
+axios.defaults.baseURL = 'https://quiz-app-y3h8.onrender.com/api';
+
 function Quiz() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -72,22 +74,11 @@ function Quiz() {
 
   const handleQuizSubmit = async (finalAnswers) => {
     try {
-      // Format answers to match the backend's expected format
-      const formattedAnswers = finalAnswers.map(answer => {
-        if (Array.isArray(answer)) {
-          return answer.map(a => Number(a));
-        }
-        return Number(answer[0]);
-      });
-
-      const response = await axios.post(`/api/quiz/${id}/submit`, {
-        answers: formattedAnswers
-      }, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
-      
+      const token = localStorage.getItem('token');
+      const response = await axios.post(`/api/quiz/${id}/submit`, 
+        { answers: finalAnswers },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       navigate(`/quiz/${id}/attempt`, { 
         state: { 
           score: response.data.score,

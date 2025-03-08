@@ -3,6 +3,8 @@ import axios from 'axios';
 import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import { PlusIcon, TrashIcon, UserGroupIcon, DocumentTextIcon, ChartBarIcon } from '@heroicons/react/24/outline';
+axios.defaults.baseURL = 'https://quiz-app-y3h8.onrender.com/api';
+
 
 function AdminDashboard() {
   const [users, setUsers] = useState([]);
@@ -42,12 +44,15 @@ function AdminDashboard() {
 
   const fetchData = async () => {
     try {
+      const token = localStorage.getItem('token');
+      const config = {
+        headers: { Authorization: `Bearer ${token}` }
+      };
       const [usersRes, quizzesRes, scoresRes] = await Promise.all([
-        axios.get('/api/admin/users'),
-        axios.get('/api/quiz'),
-        axios.get('/api/admin/scores')
+        axios.get('/api/admin/users', config),
+        axios.get('/api/quiz', config),
+        axios.get('/api/admin/scores', config)
       ]);
-
       setUsers(usersRes.data);
       setQuizzes(quizzesRes.data);
       setScores(scoresRes.data);
